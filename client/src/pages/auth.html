@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mealdee - เข้าสู่ระบบ/สมัครสมาชิก</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to bottom right, rgb(240, 253, 244), rgb(204, 251, 241));
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #0d9488, #059669);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid #0d9488;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0d9488;
+            box-shadow: 0 0 0 1px #0d9488;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div class="max-w-5xl w-full grid md:grid-cols-2 gap-8">
+            <div class="flex flex-col justify-center">
+                <h1 class="text-4xl font-bold mb-4 gradient-text">
+                    Mealdee
+                </h1>
+                <p class="text-lg text-gray-600 mb-8">
+                    วางแผนและติดตามการรับประทานอาหารเพื่อสุขภาพที่ดีของคุณ
+                </p>
+                
+                <div class="bg-white p-6 rounded-lg border">
+                    <div class="grid grid-cols-2 mb-4">
+                        <button class="py-2 text-center tab-active" data-tab="login">เข้าสู่ระบบ</button>
+                        <button class="py-2 text-center" data-tab="register">สมัครสมาชิก</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" class="block">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้</label>
+                            <input type="text" name="username" class="form-input" required>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                            <input type="password" name="password" class="form-input" required>
+                            <div class="error-message"></div>
+                        </div>
+                        <button type="submit" class="w-full px-4 py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700">
+                            เข้าสู่ระบบ
+                        </button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้</label>
+                            <input type="text" name="username" class="form-input" required>
+                            <div class="error-message"></div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                            <input type="password" name="password" class="form-input" required>
+                            <div class="error-message"></div>
+                        </div>
+                        <button type="submit" class="w-full px-4 py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700">
+                            สมัครสมาชิก
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="hidden md:flex flex-col justify-center">
+                <img
+                    src="https://images.unsplash.com/photo-1493770348161-369560ae357d"
+                    alt="Healthy food"
+                    class="rounded-lg shadow-xl mb-4"
+                />
+                <div class="bg-white/80 backdrop-blur p-6 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-2">
+                        เริ่มต้นการใช้ชีวิตที่ดีต่อสุขภาพ
+                    </h2>
+                    <p class="text-gray-600">
+                        Mealdee จะช่วยให้คุณวางแผนมื้ออาหาร ติดตามการดื่มน้ำ 
+                        และสร้างนิสัยการกินที่ดีเพื่อสุขภาพที่ดีในระยะยาว
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('[data-tab]').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('[data-tab]').forEach(btn => {
+                    btn.classList.remove('tab-active');
+                });
+                button.classList.add('tab-active');
+                
+                // Show/hide forms
+                document.getElementById('loginForm').classList.toggle('hidden', tabName !== 'login');
+                document.getElementById('registerForm').classList.toggle('hidden', tabName !== 'register');
+            });
+        });
+
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        password: formData.get('password'),
+                    }),
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.message || 'เข้าสู่ระบบไม่สำเร็จ');
+                }
+            } catch (error) {
+                const errorDiv = e.target.querySelector('.error-message');
+                errorDiv.textContent = error.message;
+            }
+        });
+
+        // Handle registration
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        password: formData.get('password'),
+                    }),
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/profile-setup';
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.message || 'สมัครสมาชิกไม่สำเร็จ');
+                }
+            } catch (error) {
+                const errorDiv = e.target.querySelector('.error-message');
+                errorDiv.textContent = error.message;
+            }
+        });
+
+        // Check if user is already logged in
+        fetch('/api/user')
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                }
+            });
+    </script>
+</body>
+</html>

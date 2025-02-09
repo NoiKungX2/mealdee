@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mealdee - ร้านอาหารเพื่อสุขภาพแนะนำ</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/lucide-icons/dist/umd/lucide.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to bottom right, rgb(240, 253, 244), rgb(204, 251, 241));
+        }
+        
+        .restaurant-card {
+            transition: transform 0.2s;
+        }
+        
+        .restaurant-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+        
+        .badge-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        
+        .badge-outline {
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen gradient-bg">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold mb-8">ร้านอาหารเพื่อสุขภาพแนะนำ</h1>
+
+            <div class="grid md:grid-cols-2 gap-6" id="restaurants-container">
+                <!-- Restaurant cards will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample restaurant data - In production, this would come from an API
+        const restaurants = [
+            {
+                id: 1,
+                name: "Healthy Haven",
+                description: "ร้านอาหารเพื่อสุขภาพสไตล์ฟิวชั่น",
+                imageUrl: "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
+                rating: 4.5,
+                healthyFeatures: ["ออร์แกนิค", "วีแกน"],
+                dietaryOptions: ["มังสวิรัติ", "ไร้กลูเตน"],
+                address: "123 ถนนสุขุมวิท กรุงเทพฯ",
+                phone: "02-123-4567",
+                openingHours: [
+                    { day: "จันทร์-ศุกร์", open: "10:00", close: "21:00" },
+                    { day: "เสาร์-อาทิตย์", open: "11:00", close: "22:00" }
+                ],
+                recommendedMenus: [
+                    {
+                        name: "สลัดควินัว",
+                        price: 250,
+                        description: "สลัดผักออร์แกนิคกับควินัว",
+                        calories: 350
+                    }
+                ]
+            }
+            // Add more restaurants as needed
+        ];
+
+        function createRestaurantCard(restaurant) {
+            return `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden restaurant-card">
+                    ${restaurant.imageUrl ? 
+                        `<img src="${restaurant.imageUrl}" alt="${restaurant.name}" class="w-full h-48 object-cover">` 
+                        : ''}
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h2 class="text-xl font-semibold">${restaurant.name}</h2>
+                            <div class="flex items-center">
+                                <i class="lucide-star text-yellow-400 fill-current"></i>
+                                <span class="ml-1">${restaurant.rating}</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">${restaurant.description}</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-2">
+                                ${restaurant.healthyFeatures.map(feature => 
+                                    `<span class="badge badge-secondary">${feature}</span>`
+                                ).join('')}
+                                ${restaurant.dietaryOptions.map(option => 
+                                    `<span class="badge badge-outline">${option}</span>`
+                                ).join('')}
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center text-gray-600">
+                                    <i class="lucide-map-pin mr-2"></i>
+                                    <span class="text-sm">${restaurant.address}</span>
+                                </div>
+                                ${restaurant.phone ? `
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="lucide-phone mr-2"></i>
+                                        <span class="text-sm">${restaurant.phone}</span>
+                                    </div>
+                                ` : ''}
+                                <div class="flex items-center text-gray-600">
+                                    <i class="lucide-clock mr-2"></i>
+                                    <div class="text-sm">
+                                        ${restaurant.openingHours.map(hours => 
+                                            `<div>${hours.day}: ${hours.open}-${hours.close}</div>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <h3 class="font-semibold mb-2">เมนูแนะนำ</h3>
+                                ${restaurant.recommendedMenus.map(menu => `
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="flex justify-between">
+                                            <h4 class="font-medium">${menu.name}</h4>
+                                            <span class="text-sm font-medium">
+                                                ${menu.price} บาท
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">${menu.description}</p>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            ${menu.calories} แคลอรี่
+                                        </p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Populate restaurants
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('restaurants-container');
+            restaurants.forEach(restaurant => {
+                container.innerHTML += createRestaurantCard(restaurant);
+            });
+        });
+    </script>
+</body>
+</html>
